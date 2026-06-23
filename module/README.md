@@ -3,7 +3,7 @@
 Streams live session stats from ITGmania to the ITG Stats Twitch extension backend.
 One self-contained file; nothing secret lives in it.
 
-**Requires:** ITGmania ≥ 1.2.0, Simply Love ≥ 5.8.1 ([why](../docs/RESEARCH.md#1-chosen-minimum-versions-decision)).
+**Requires:** ITGmania ≥ 1.2.0, Simply Love ≥ 5.8.1
 
 ## Install (streamer)
 
@@ -45,7 +45,7 @@ ini — add it (see Install step 4) before relying on the indicator to diagnose 
 |---|---|
 | `no Save/TwitchStats.ini found` | Copy it from the extension config page; save in `Save/`. |
 | `missing ApiKey or Url` | Re-copy the ini from the config page; don't hand-edit the key. |
-| `ITGmania blocked the connection… HttpAllowHosts` | Add the EBS host to `HttpAllowHosts` in `Save/Preferences.ini` (game closed), keep `HttpEnabled=1`. |
+| `ITGmania blocked the connection… HttpAllowHosts` | Add the EBS host `*.smreqquests.com` to `HttpAllowHosts` in `Save/Preferences.ini` (game closed), keep `HttpEnabled=1`. Example: `HttpAllowHosts=*.groovestats.com,*.itgmania.com,*.smrequests.com,*.arrowcloud.dance`|
 | `API key rejected` | Key was mistyped or never issued — re-copy from the config page. |
 | `API key was revoked/rotated` | Someone clicked Regenerate — update the ini with the new key. |
 | Overlay frozen mid-song | Harmless: the module reconnects with backoff and re-sends what it can (last ~50 events, newest 5 detail blobs). |
@@ -53,53 +53,7 @@ ini — add it (see Install step 4) before relying on the indicator to diagnose 
 | Indicator stuck on yellow `connecting...` | The connection never completes: server down, TLS problem, or the proxy is not passing WebSocket upgrades. Check `https://<host>/healthz` (with `DIAG_ALLOW_IPS` set, it lists every connection attempt and why it failed). |
 | Indicator red `off` | The module went dormant — the SystemMessage at startup / `Logs/log.txt` says why (bad key, blocked host, etc.). Fix, then restart ITGmania. |
 
-Notes: course mode and demonstration/attract are intentionally not recorded. Casual game
+Notes: Course Mode and demonstration/attract are intentionally not recorded. Casual game
 mode sends scores but no per-play detail (Simply Love doesn't track offsets there).
 Non-ASCII titles/names are truncated bytewise at protocol limits — a rare multi-byte
-character may be clipped at the boundary.
-
-## Developer testing
-
-Logic harness (runs the real module under a Lua VM with SM5 stubbed):
-
-```
-npm test -w tools          # includes tools/test/lua-module.test.ts
-```
-
-Against a live mock EBS (asserts the canonical fixture stream):
-
-```
-npm run mock-game -w tools -- listen --port 8089
-```
-
-Then in `Save/TwitchStats.ini` set `Url=ws://127.0.0.1:8089/ingest` (plain `ws://` locally;
-the mock accepts any path, but the real EBS requires `/ingest` — keep the habit), and add
-`127.0.0.1` to `HttpAllowHosts` in `Save/Preferences.ini` (host only — ports/paths are
-never part of the allowlist match).
-
-To *see* the data in the actual overlay UI while you play, run the full local stack
-instead of the mock: local EBS + vite + `dev.html` — walkthrough in
-[extension/README.md](../extension/README.md#local-overlay-preview-no-twitch-needed).
-
-## Manual test matrix (Phase 1 acceptance — run on real ITGmania, record results)
-
-| Case | ITGmania | SL | Result | Notes |
-|---|---|---|---|---|
-| Module loads, zero Lua errors (clean SL install) | 1.2.x | 5.8.x | ☐ | |
-| P1-only 3-song session matches fixture stream | | | ☐ | `mock-game listen` |
-| P1+P2 versus, different difficulties | | | ☐ | |
-| P2 joins mid-session (`players_changed`) | | | ☐ | |
-| Restart ×2 mid-song (Ctrl+R, event mode) | | | ☐ | |
-| Replay from evaluation (Ctrl+R on eval) | | | ☐ | |
-| Fail mid-song (detail has `deathSecond`) | | | ☐ | |
-| Rate mod (e.g. 1.2x) | | | ☐ | |
-| Back out of song early, pick different song | | | ☐ | |
-| Back out, re-pick same song (fresh play, not restart) | | | ☐ | |
-| Close game mid-song (`session_end` best effort) | | | ☐ | |
-| Course mode entered → no events | | | ☐ | |
-| FA+ game mode judgment mapping | | | ☐ | verify W0 shift (module TODO) |
-| Casual mode → scores only, no detail | | | ☐ | |
-| Missing ini → friendly message, dormant | | | ☐ | |
-| Wrong key → dormant after 3 rejects | | | ☐ | |
-| Host not in HttpAllowHosts → actionable message | | | ☐ | |
-| `wss://` to real EBS on Windows | | | ☐ | TLS/CA bundle path |
+character may be clipped at the boundary. Course Mode support will be released sometime in the future.
