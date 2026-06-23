@@ -21,6 +21,7 @@ active session the overlay hides itself completely, so it never clutters your la
   grade, restart count, and notes hit / total.
 - Live "▶ playing" status on the song in progress, updating as you play.
 - Session totals: songs played, average score, total notes hit, and session duration.
+- Supports Singles and Doubles for stats layouts and knows when the player switches between them.
 
 **Per-song detail** - viewers click any completed song to see the full Simply-Love-style
 evaluation, reproduced faithfully:
