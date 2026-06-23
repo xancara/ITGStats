@@ -7,17 +7,18 @@ One self-contained file; nothing secret lives in it.
 
 ## Install (streamer)
 
-1. Copy `TwitchStats.lua` into `Themes/Simply Love/Modules/` (create the folder if needed).
-2. On Twitch, open the extension's **config page** and generate your key — it shows a
-   pre-filled `TwitchStats.ini` to copy. Save it as `Save/TwitchStats.ini`.
-3. Add the stats server host to `HttpAllowHosts` in `Save/Preferences.ini` (comma-separated;
+1. Copy [`TwitchStats.lua`](https://github.com/xancara/ITGStats/blob/main/module/TwitchStats.lua) into `Themes/Simply Love/Modules/` (create the folder if needed). 
+      -Note: This may differ you are using a modified theme. Use your desired themes path.
+2. On Twitch, Add the extension and then open the extension's **config page** and generate your key —
+   it shows a pre-filled `TwitchStats.ini` to copy. Save it as `Save/TwitchStats.ini`. Sample available [here](https://github.com/xancara/ITGStats/blob/main/module/TwitchStats.ini).
+3. Add the `*.smrequests.com` host to `HttpAllowHosts` in `Save/Preferences.ini` (comma-separated;
    keep the existing entries), and make sure `HttpEnabled=1`. Edit while the game is closed —
-   these preferences are read once at startup.
+   these preferences are read once at startup and overwritten at shutdown.
 4. Start ITGmania and play — by default the module runs silently with no on-screen UI.
    To verify or troubleshoot the connection, add `Debug=true` to the ini (see below): the
    song select screen then shows a small status indicator in the top-left corner — green
    **TwitchStats: connected**, yellow **connecting...** (retrying with backoff), red **off**
-   (dormant — check the messages/log for why).
+   (dormant — check the messages/log for why). You can also see connection state on the Twitch extension's **config page**.   
 
 `Save/TwitchStats.ini` reference (comments must use `#`):
 
@@ -45,7 +46,7 @@ ini — add it (see Install step 4) before relying on the indicator to diagnose 
 |---|---|
 | `no Save/TwitchStats.ini found` | Copy it from the extension config page; save in `Save/`. |
 | `missing ApiKey or Url` | Re-copy the ini from the config page; don't hand-edit the key. |
-| `ITGmania blocked the connection… HttpAllowHosts` | Add the EBS host `*.smreqquests.com` to `HttpAllowHosts` in `Save/Preferences.ini` (game closed), keep `HttpEnabled=1`. Example: `HttpAllowHosts=*.groovestats.com,*.itgmania.com,*.smrequests.com,*.arrowcloud.dance`|
+| `ITGmania blocked the connection… HttpAllowHosts` | Add the EBS host `*.smrequests.com` to `HttpAllowHosts` in `Save/Preferences.ini` (game closed), keep `HttpEnabled=1`. Example: `HttpAllowHosts=*.groovestats.com,*.itgmania.com,*.smrequests.com,*.arrowcloud.dance`|
 | `API key rejected` | Key was mistyped or never issued — re-copy from the config page. |
 | `API key was revoked/rotated` | Someone clicked Regenerate — update the ini with the new key. |
 | Overlay frozen mid-song | Harmless: the module reconnects with backoff and re-sends what it can (last ~50 events, newest 5 detail blobs). |
