@@ -1,4 +1,4 @@
-# TwitchStats.lua — changelog & feature list
+# ITGStats.lua — changelog & feature list
 
 The in-game **ITGmania / Simply Love module** that streams your live session to the ITG Stats
 Twitch extension. This single file is the public home for both **what the module can do (and
@@ -6,7 +6,7 @@ since which version)** and the **rolling change history**. Feedback and bug repo
 welcome — see [module/README.md](README.md) for install/troubleshooting.
 
 The version here matches `MODULE_VERSION` at the top of
-[`TwitchStats.lua`](TwitchStats.lua); it is the module's own version, independent of the
+[`ITGStats.lua`](ITGStats.lua); it is the module's own version, independent of the
 Twitch extension's version. The change history follows
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
@@ -34,8 +34,26 @@ Requires ITGmania ≥ 1.2.0 and Simply Love ≥ 5.8.1.
 
 ## [Unreleased]
 
-_Nothing yet. Add entries here as module changes land, then stamp this section with the
-version (and bump `MODULE_VERSION`) on release._
+### No Unreleased Changes
+
+
+## [0.1.2] — 2026-06-23
+
+### Changed
+- Renamed the module file to **`ITGStats.lua`** (was `TwitchStats.lua`). If you're updating,
+  download the new file and delete the old one from `Themes/Simply Love/Modules/` so you don't
+  run both.
+- The config file is now named **`itgstats.ini`** (section `[ITGStats]`). New keys you copy
+  from the config page come pre-named this way. **No action needed if you already set things
+  up** — the module still reads a legacy `Save/TwitchStats.ini` (and its `[TwitchStats]`
+  section), so existing installs keep working untouched. The new name is read first when both
+  exist; rename your file whenever it's convenient.
+- The on-screen status indicator and messages now read **`ITGStats:`** instead of
+  `TwitchStats:`.
+- The live score now tells the extension **which scoring system it's in** (EX vs ITG). When
+  you play with Simply Love's *Display EX Score* on, the overlay labels your live score "EX"
+  so it matches your game screen. A finished song always shows both your ITG and EX
+  percentages. Decided per player; if you use the standard ITG score nothing changes.
 
 ## [0.1.1] — 2026-06-16
 
