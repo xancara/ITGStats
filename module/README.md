@@ -8,7 +8,7 @@ One self-contained file; nothing secret lives in it.
 ## Install (streamer)
 
 1. Copy [`ITGStats.lua`](https://github.com/xancara/ITGStats/blob/main/module/ITGStats.lua) into `Themes/Simply Love/Modules/` (create the folder if needed). 
-      -Note: This may differ you are using a modified theme. Use your desired themes path.
+      \-***Note***: This may differ you are using a modified theme. Use your desired themes path.
 2. On Twitch, Add the extension and then open the extension's **config page** and generate your key —
    it shows a pre-filled `ITGStats.ini` to copy. Save it as `Save/ITGStats.ini`. Sample available [here](https://github.com/xancara/ITGStats/blob/main/module/ITGStats.ini).
 3. Add the `*.smrequests.com` host to `HttpAllowHosts` in `Save/Preferences.ini` (comma-separated;
