@@ -1,18 +1,19 @@
--- TwitchStats.lua -- drop-in Simply Love module streaming live session stats to the
--- ITG Stats Twitch extension backend.
+-- ITGStats.lua -- drop-in Simply Love module streaming live session stats to the
 --
 -- For use with ITGStats extension v0.1.0 on Twitch
 --
--- Install: copy into Themes/Simply Love/Modules/, put your key in Save/TwitchStats.ini
+-- Install: copy into Themes/Simply Love/Modules/, put your key in Save/itgstats.ini
 -- (copy it from the extension config page), and add the stats host to
--- HttpAllowHosts in Save/Preferences.ini. Full guide: docs/INSTALL-STREAMER.md.
+-- HttpAllowHosts in Save/Preferences.ini. Full guide: https://github.com/xancara/ITGStats/blob/main/module/README.md.
 --
 -- Requires ITGmania >= 1.2.0 and Simply Love >= 5.8.1.
 -- 
 
-local MODULE_VERSION = "0.1.1"
+local MODULE_VERSION = "0.1.2"
 local PROTOCOL_VERSION = 1
-local INI_PATH = "Save/TwitchStats.ini"
+-- New installs use Save/itgstats.ini; the legacy Save/TwitchStats.ini is still read so
+-- streamers from before the rename keep working without re-copying anything. First match wins.
+local INI_PATHS = { "Save/itgstats.ini", "Save/TwitchStats.ini" }
 local PROGRESS_MIN_INTERVAL = 2.0 -- seconds
 local MAX_QUEUE = 50 -- 
 local MAX_QUEUED_DETAILS = 5 -- 
@@ -45,11 +46,11 @@ local statusActor = nil -- BitmapText indicator on ScreenSelectMusic (set in Ini
 -- small helpers
 
 local function Log(text)
-	Trace("[TwitchStats] " .. tostring(text))
+	Trace("[ITGStats] " .. tostring(text))
 end
 
 local function Announce(text)
-	SCREENMAN:SystemMessage("TwitchStats: " .. tostring(text))
+	SCREENMAN:SystemMessage("ITGStats: " .. tostring(text))
 end
 
 -- Every entry point is wrapped so a stats/network problem can never crash a screen.
@@ -109,12 +110,12 @@ local STATUS_COLORS = {
 
 local function StatusState()
 	if dormant then
-		return "off", "TwitchStats: off"
+		return "off", "ITGStats: off"
 	end
 	if connected then
-		return "connected", "TwitchStats: connected"
+		return "connected", "ITGStats: connected"
 	end
-	return "connecting", "TwitchStats: connecting..."
+	return "connecting", "ITGStats: connecting..."
 end
 
 local function UpdateStatus()
@@ -154,14 +155,25 @@ local function LoadConfig()
 	if type(IniFile) ~= "table" or type(IniFile.ReadFile) ~= "function" then
 		return nil, "theme is missing the IniFile helper (unsupported install)"
 	end
-	local ini = IniFile.ReadFile(INI_PATH)
-	local section = type(ini) == "table" and ini.TwitchStats or nil
+	-- Read the new filename first, then the legacy one; accept either the new [ITGStats]
+	-- section or the old [ITGStats] section so pre-rename installs load untouched.
+	local section
+	for _, path in ipairs(INI_PATHS) do
+		local ini = IniFile.ReadFile(path)
+		if type(ini) == "table" then
+			local s = ini.ITGStats or ini.TwitchStats
+			if type(s) == "table" then
+				section = s
+				break
+			end
+		end
+	end
 	if type(section) ~= "table" then
-		return nil, "no " .. INI_PATH .. " found. Download one from the extension config page on Twitch."
+		return nil, "no " .. INI_PATHS[1] .. " found. Download one from the extension config page on Twitch."
 	end
 	if type(section.ApiKey) ~= "string" or section.ApiKey == ""
 		or type(section.Url) ~= "string" or section.Url == "" then
-		return nil, INI_PATH .. " is missing ApiKey or Url. Re-download it from the extension config page."
+		return nil, INI_PATHS[1] .. " is missing ApiKey or Url. Re-download it from the extension config page."
 	end
 	return {
 		apiKey = section.ApiKey,
@@ -374,10 +386,10 @@ local function GoDormant(message, quiet)
 end
 
 local DORMANT_REASONS = {
-	["invalid key"] = "API key rejected. Generate new TwitchStats.ini from the extension config page.",
+	["invalid key"] = "API key rejected. Generate new itgstats.ini from the extension config page.",
 	["key revoked"] = "API key was revoked. Generate a new key on the extension config page.",
-	["key rotated"] = "API key was rotated. Update Save/TwitchStats.ini with the new key.",
-	["unsupported protocol version"] = "this module version is too old. Download the latest TwitchStats.lua.",
+	["key rotated"] = "API key was rotated. Update Save/itgstats.ini with the new key.",
+	["unsupported protocol version"] = "this module version is too old. Download the latest ITGStats.lua from the ITGStats Github",
 }
 
 local function OnSocketMessage(msg)
@@ -426,7 +438,7 @@ local function OnSocketMessage(msg)
 			-- times in a row, is a rejection loop -- stop hammering the server.
 			quickFails = quickFails + 1
 			if quickFails >= QUICK_FAIL_LIMIT then
-				GoDormant("the stats server keeps rejecting the connection. Re-copy TwitchStats.ini from the extension config page, then restart ITGmania.")
+				GoDormant("the stats server keeps rejecting the connection. Re-copy itgstats.ini from the extension config page, then restart ITGmania.")
 			end
 		else
 			quickFails = 0 -- the connection lived a while: genuine drop, let it retry
@@ -590,21 +602,20 @@ end
 -- the streamer's screen. The setting is per-player, so each side resolves independently;
 -- fall back to the ITG percent (GetPercentDancePoints x100) when EX doesn't apply. EX is
 -- unavailable in Casual mode (CalculateExScore returns 0 there), so force the ITG percent.
--- NOTE: v1 does NOT tag which scoring system a progress score uses -- the EBS/overlay still
--- treat it as a plain percent, and a completed row reverts to the ITG song_complete.score.
--- Marking EX vs ITG (and labelling it in the overlay) is staged for v0.2.0; see
--- docs/deferred-work.md.
+-- Returns (score, isEx): the displayed percent and whether it is the EX value. We tag it
+-- (progress.displayEx / song_complete.displayEx) so the overlay can label the number "EX" and
+-- keep a completed row on the same system -- no EX->ITG flip at song end.
 local function ProgressScore(pn, pss)
 	if SL.Global.GameMode ~= "Casual" then
 		local mods = SL[pn] and SL[pn].ActiveModifiers
 		if mods and mods.ShowExScore then
 			local ok, ex = pcall(CalculateExScore, PlayerEnum(pn))
 			if ok and type(ex) == "number" then
-				return Round(ex, 2)
+				return Round(ex, 2), true
 			end
 		end
 	end
-	return Round(pss:GetPercentDancePoints() * 100, 2)
+	return Round(pss:GetPercentDancePoints() * 100, 2), false
 end
 
 local function OnJudgment(params)
@@ -652,11 +663,14 @@ local function OnJudgment(params)
 		local per = {}
 		for ppn, counts in pairs(current.progress) do
 			local pss = STATSMAN:GetCurStageStats():GetPlayerStageStats(PlayerEnum(ppn))
+			local score, isEx = ProgressScore(ppn, pss)
 			per[ppn] = {
-				score = ProgressScore(ppn, pss),
+				score = score,
 				notesHit = counts.notesHit,
 				judgments = ProgressJudgments(counts),
 			}
+			-- Omit when false (absent = ITG, P 3.6).
+			if isEx then per[ppn].displayEx = true end
 		end
 		Emit("progress", { songId = current.topSongId, perPlayer = per })
 	end
@@ -734,6 +748,13 @@ local function CompleteFor(pn, pss)
 	end
 	out.judgments = j
 	out.exScore = Round((CalculateExScore(player)) or 0, 2)
+	-- Tag the player's displayed system so the overlay headlines exScore (labelled EX) and the
+	-- completed row matches what was shown live. Only ITG/FA+ reach here; Casual returned above
+	-- (always ITG). Omit when false (absent = ITG, P 3.7).
+	local mods = SL[pn] and SL[pn].ActiveModifiers
+	if mods and mods.ShowExScore then
+		out.displayEx = true
+	end
 	out.holdsHeld = counts.Holds or 0
 	out.holdsTotal = counts.totalHolds or 0
 	out.rollsHeld = counts.Rolls or 0
