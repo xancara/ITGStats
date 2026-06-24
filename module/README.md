@@ -25,7 +25,7 @@ One self-contained file; nothing secret lives in it.
 ```ini
 [ITGStats]
 ApiKey=itgs_…                      # from the config page; shown exactly once
-Url=wss://ebs.example.com/ingest
+Url=wss://extension.smrequests.com/ingest
 SendProgress=1                     # 1 = live mid-song updates (throttled to 1 per 2 s)
 ShareProfileNames=0                # 1 = send profile display names to viewers
 #Debug=true                        # optional, hand-add: show the song-wheel connection
