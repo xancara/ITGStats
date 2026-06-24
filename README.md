@@ -50,7 +50,7 @@ The overlay automatically follows the viewer's Twitch **light/dark theme**.
 ## ITGStats v0.2.0
 
 **Bug Fixes**
-* **Live Updates:** Fixed an issue where the ITG score displayed during live updates while "Display EX score" was enabled. This is already fixed in the module just not on the display side.
+* ~~**Live Updates:** Fixed an issue where the ITG score displayed during live updates while "Display EX score" was enabled. This is already fixed in the module just not on the display side.~~
 
 **Enhancements**
 * **Average Score:** Excluded 0.00 scores from the calculated average score.
