@@ -50,7 +50,7 @@ The overlay automatically follows the viewer's Twitch **light/dark theme**.
 
 Viewers will need to open the ITGStats view on the stream and "accept" the testing conditions until the extension is approved by Twitch.
 
-Once you have accepted, you will the the "ITG Stats" pill shaped marker pop up (seen just below the "Live" icon on the stream). 
+Once you have accepted, you will see the "ITG Stats" pill shaped marker pop up (seen just below the "Live" icon on the stream). 
 You can interact with the extension from there.
 
 <img width="1202" height="785" alt="image" src="https://github.com/user-attachments/assets/fe3bb652-5683-4b68-9971-3f4abdb040b5" />
