@@ -55,6 +55,7 @@ You can interact with the extension from there.
 
 <img width="1202" height="785" alt="image" src="https://github.com/user-attachments/assets/fe3bb652-5683-4b68-9971-3f4abdb040b5" />
 
+Currently this is a desktop only Video Overlay extension but Panel and Mobile support are coming in the next update. See the road map below.
 
 ## Current Roadmap
 ---
