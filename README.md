@@ -1,7 +1,9 @@
 # ITGStats
 
 Jump to [/module/README.md](https://github.com/xancara/ITGStats/blob/main/module/README.md) for instructions
+
 [For Viewers](#For-Viewers)
+
 ---
 ### A twitch extension and module for ITGmania 1.2.1+ and SimplyLove 5.8.1+
 
