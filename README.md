@@ -1,6 +1,6 @@
 # ITGStats
 
-Jump to [/module/README.md](https://github.com/xancara/ITGStats/blob/main/module/README.md) for instructions
+Streamers -- Jump to [/module/README.md](https://github.com/xancara/ITGStats/blob/main/module/README.md) for instructions
 
 [For Viewers](#For-Viewers)
 
