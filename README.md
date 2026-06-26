@@ -1,7 +1,7 @@
 # ITGStats
 
 Jump to [/module/README.md](https://github.com/xancara/ITGStats/blob/main/module/README.md) for instructions
-
+[For Viewers](#For-Viewers)
 ---
 ### A twitch extension and module for ITGmania 1.2.1+ and SimplyLove 5.8.1+
 
@@ -43,6 +43,12 @@ submits scores gets its own tab, so a guest's scores don't get mixed with yours.
 or more profiles the tabs become a dropdown.
 
 The overlay automatically follows the viewer's Twitch **light/dark theme**.
+
+## For Viewers
+
+Viewers will need to open the ITGStats view on the stream and "accept" the testing conditions until the extension is approved by Twitch.
+
+<img width="1202" height="785" alt="image" src="https://github.com/user-attachments/assets/fe3bb652-5683-4b68-9971-3f4abdb040b5" />
 
 
 ## Current Roadmap
