@@ -63,6 +63,7 @@ Currently this is a desktop only Video Overlay extension but Panel and Mobile su
 
 **Bug Fixes**
 * ~~**Live Updates:** Fixed an issue where the ITG score displayed during live updates while "Display EX score" was enabled. This is already fixed in the module just not on the display side.~~
+* **Scatterplot Inversion**: Correct expections for #1 -- Should match SimplyLove. 
 
 **Enhancements**
 * **Average Score:** Excluded 0.00 scores from the calculated average score.
